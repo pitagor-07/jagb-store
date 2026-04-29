@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin JAGB - Connexion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .login-box { background: white; padding: 50px 40px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .login-box img { height: 70px; margin-bottom: 20px; }
+        .login-box h2 { font-size: 1.4rem; color: #1a1a1a; margin-bottom: 8px; }
+        .login-box p { color: #888; font-size: 0.85rem; margin-bottom: 30px; }
+        .error-msg { background: #fff0f0; color: #dc3545; border: 1px solid #f5c6cb; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; display: none; }
+        .error-msg.visible { display: block; }
+        input[type="password"] { width: 100%; padding: 14px 16px; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; font-family: 'Poppins', sans-serif; margin-bottom: 16px; transition: border 0.3s; outline: none; }
+        input[type="password"]:focus { border-color: #ff8000; }
+        button { width: 100%; padding: 14px; background: #ff8000; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; transition: background 0.3s; }
+        button:hover { background: #e67300; }
+        .back-link { display: block; margin-top: 20px; color: #888; text-decoration: none; font-size: 0.85rem; }
+        .back-link:hover { color: #ff8000; }
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <img src="logo.jpeg" alt="JAGB Logo">
+    <h2>Espace Administrateur</h2>
+    <p>Entrez votre mot de passe pour accéder à la gestion du site.</p>
+    <div class="error-msg" id="errorMsg">❌ Mot de passe incorrect. Réessayez.</div>
+    <form method="POST" action="/login">
+        <input type="password" name="password" placeholder="Mot de passe" autofocus required>
+        <button type="submit">SE CONNECTER</button>
+    </form>
+    <a href="/" class="back-link">← Retour à la boutique</a>
+</div>
+<script>
+    if (window.location.search.includes('error=1')) {
+        document.getElementById('errorMsg').classList.add('visible');
+    }
+</script>
+</body>
+</html>

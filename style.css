@@ -1,0 +1,402 @@
+/* --- RESET & VARIABLES --- */
+:root {
+    /* PALETTE OFFICIELLE JAGB+ */
+    --primary-color: #ff8000;    /* Le Orange vif du logo */
+    --gold-color: #ffd700;       /* Le Doré/Jaune des contours */
+    --secondary-color: #1a1a1a;  /* Noir Doux */
+    
+    --bg-color: #f8f9fa;
+    --text-color: #333;
+    --white: #ffffff;
+    --font-main: 'Poppins', sans-serif;
+    --font-heading: 'Oswald', sans-serif;
+    --shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-main);
+    color: var(--text-color);
+    line-height: 1.6;
+    
+    /* --- AJOUT DE L'AIGLE/COLOMBE EN FOND DE PAGE --- */
+    background-color: var(--bg-color);
+    
+    /* Génération d'une colombe stylisée en filigrane pour le test */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path fill="%23ff8000" d="M50 10 L60 40 L90 40 L65 60 L75 90 L50 70 L25 90 L35 60 L10 40 L40 40 Z"/></svg>'); 
+    
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed; 
+    background-size: 60%; 
+}
+
+/* --- HEADER & LOGO --- */
+header {
+    background: rgba(255, 255, 255, 0.95); 
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.main-logo {
+    height: 70px; 
+    width: auto;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    align-items: center;
+}
+
+nav ul li a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    padding: 10px 15px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    transition: color 0.3s;
+}
+
+nav ul li a i {
+    margin-right: 5px;
+    color: var(--primary-color); 
+}
+
+nav ul li a:hover {
+    color: var(--primary-color);
+}
+
+.btn-contact {
+    background: #25D366; 
+    color: var(--white) !important;
+    border-radius: 50px;
+    padding: 10px 20px !important;
+}
+
+.btn-contact:hover {
+    background: #1ebd57;
+}
+
+/* --- HERO SECTION PREMIUM --- */
+.hero-premium {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://via.placeholder.com/1600x600/FF8000/FFFFFF?text=JAGB+Goalkeepers');
+    background-size: cover;
+    background-position: center;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    color: var(--white);
+    text-align: left;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin-left: 10%;
+    padding: 20px;
+}
+
+.hero-content h1 {
+    font-family: var(--font-heading);
+    font-size: 4rem;
+    line-height: 1.1;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+.hero-content h1 span {
+    color: var(--primary-color); 
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.btn-hero {
+    display: inline-block;
+    background: var(--primary-color); 
+    color: var(--white);
+    text-decoration: none;
+    padding: 15px 35px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 5px;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.btn-hero:hover {
+    transform: translateY(-3px);
+    background: #e67300; 
+}
+
+/* --- PRODUITS PREMIUM --- */
+.section-header {
+    text-align: center;
+    margin: 60px 0 40px 0;
+    background: rgba(248, 249, 250, 0.8); 
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    color: var(--secondary-color);
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 4px;
+    background: var(--gold-color); 
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-bottom: 80px;
+}
+
+.product-card-premium {
+    background: rgba(255, 255, 255, 0.9); 
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    border-bottom: 2px solid transparent; 
+}
+
+.product-card-premium:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    border-bottom: 2px solid var(--primary-color); 
+}
+
+.badge-new {
+    position: absolute;
+    top: 15px; right: 15px;
+    background: var(--gold-color); 
+    color: var(--secondary-color);
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.product-image-container {
+    height: 300px;
+    width: 100%;
+    overflow: hidden;
+    background: #eee;
+}
+
+.product-image-container img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.product-card-premium:hover .product-image-container img {
+    transform: scale(1.1);
+}
+
+.product-details {
+    padding: 25px;
+}
+
+.category {
+    color: #888;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.product-details h3 {
+    font-size: 1.3rem;
+    color: var(--secondary-color);
+    margin: 10px 0 20px 0;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.price {
+    color: var(--primary-color); 
+    font-size: 1.6rem;
+    font-weight: 700;
+    font-family: var(--font-heading);
+}
+
+.btn-add {
+    background: var(--secondary-color);
+    color: var(--white);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.btn-add:hover {
+    background: var(--primary-color); 
+}
+
+/* --- PAIEMENT PREMIUM --- */
+.payment-premium {
+    background: var(--secondary-color);
+    color: var(--white);
+    padding: 80px 0;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.payment-text h2 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.payment-text h2::after {
+    content: ''; display: block;
+    width: 60px; height: 4px;
+    background: var(--primary-color); 
+    margin-top: 15px;
+}
+
+.payment-methods-premium {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.method-card {
+    background: rgba(255,255,255,0.05);
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.method-card img {
+    max-height: 40px;
+    margin-bottom: 15px;
+}
+
+.method-card strong {
+    display: block;
+    font-size: 1.2rem;
+    color: var(--primary-color); 
+}
+
+/* --- FOOTER PREMIUM --- */
+footer {
+    background: var(--white);
+    padding: 50px 0;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-logo {
+    height: 50px;
+    opacity: 1; 
+}
+
+.footer-content p {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.social-icons a {
+    color: #bbb;
+    font-size: 1.5rem;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.social-icons a:hover {
+    color: var(--primary-color); 
+}
+
+/* --- MODAL DE COMMANDE (AJOUTÉ) --- */
+.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 95%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .hero-content h1 { font-size: 2.5rem; }
+    .payment-grid { grid-template-columns: 1fr; text-align: center; }
+    .payment-text h2::after { margin: 15px auto; }
+}

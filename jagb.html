@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAGB Store | Officiel</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="container header-flex">
+            <div class="logo-container">
+                <img src="logo.jpeg" alt="JAGB Logo" class="main-logo">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/">Accueil</a></li>
+                    <li><a href="#produits">Boutique</a></li>
+                    <li><a href="/about">À Propos</a></li>
+                    <li><a href="https://wa.me/50931970927" class="btn-contact"><i class="fab fa-whatsapp"></i> Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero-premium">
+        <div class="hero-content">
+            <h1>LA PERFORMANCE <br><span>SIGNÉE JAGB</span></h1>
+            <p>Équipements sportifs professionnels. Validé par Benzestore International.</p>
+            <a href="#produits" class="btn-hero">Découvrir la collection</a>
+        </div>
+    </section>
+
+    <div class="container" style="margin-top: 40px; text-align: center;">
+        <input type="text" id="searchBar" onkeyup="filtrerProduits()" placeholder="🔍 Rechercher un produit..." style="width: 100%; max-width: 400px; padding: 12px; border-radius: 25px; border: 1px solid #ddd;">
+    </div>
+
+    <section id="produits" class="container">
+        <div class="section-header">
+            <h2 class="section-title">NOS PRODUITS</h2>
+        </div>
+        <div id="product-grid" class="product-grid">
+            </div>
+    </section>
+
+    <section id="paiement" class="payment-premium">
+        <div class="container payment-grid">
+            <div class="payment-text">
+                <h2>PAIEMENT SÉCURISÉ</h2>
+                <p>Effectuez votre transfert, puis confirmez sur WhatsApp.</p>
+            </div>
+            <div class="payment-methods-premium">
+                <div class="method-card">
+                    <img src="moncash.webp" alt="MonCash">
+                    <strong>+509 4854-6256</strong>
+                </div>
+                <div class="method-card">
+                    <img src="natcash.png" alt="Natcash">
+                    <strong>+509 40XX-XXXX</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <h2 style="color:#ff8000; margin-bottom:15px;">Finaliser la commande</h2>
+            <div id="modal-product-info"></div>
+            
+            <input type="text" id="clientNom" placeholder="Votre nom" style="width:100%; padding:10px; margin-top:15px;">
+            <input type="tel" id="clientTel" placeholder="Votre téléphone" style="width:100%; padding:10px; margin-top:10px;">
+            
+            <p style="margin: 15px 0 10px; font-size: 0.9rem;">Mode de paiement :</p>
+            <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+                <div onclick="setPayment('MonCash')" id="btnMonCash" style="cursor:pointer; border:2px solid #eee; padding:5px; border-radius:8px;">
+                    <img src="moncash.webp" width="60" alt="MonCash">
+                </div>
+                <div onclick="setPayment('Natcash')" id="btnNatcash" style="cursor:pointer; border:2px solid #eee; padding:5px; border-radius:8px;">
+                    <img src="natcash.png" width="60" alt="Natcash">
+                </div>
+            </div>
+
+            <button onclick="envoyerCommande()" style="width:100%; background:#ff8000; color:white; border:none; padding:12px; font-weight:bold; cursor:pointer;">COMMANDER SUR WHATSAPP</button>
+            <button onclick="fermerModal()" style="background:none; border:none; color:#888; margin-top:10px; cursor:pointer;">Annuler</button>
+        </div>
+    </div>
+
+    <script>
+        let produitsData = [];
+        let produitSelectionne = null;
+        let methodeChoisie = "";
+        const WHATSAPP_NUM = '50931970927';
+
+        async function chargerProduits() {
+            const res = await fetch('/api/products');
+            produitsData = await res.json();
+            afficherProduits(produitsData);
+        }
+
+        function afficherProduits(liste) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = liste.map(p => `
+                <div class="product-card-premium">
+                    <div class="product-image-container">
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="product-details">
+                        <span class="category">${p.category}</span>
+                        <h3>${p.name}</h3>
+                        <div class="price-row">
+                            <span class="price">${Number(p.price).toLocaleString()} HTG</span>
+                            <button class="btn-add" onclick='ouvrirModal(${JSON.stringify(p)})'>Commander</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function ouvrirModal(p) {
+            produitSelectionne = p;
+            document.getElementById('modal-product-info').innerHTML = `<strong>${p.name}</strong> - ${p.price} HTG`;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        function fermerModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            methodeChoisie = "";
+        }
+
+        function setPayment(m) {
+            methodeChoisie = m;
+            document.getElementById('btnMonCash').style.borderColor = (m === 'MonCash') ? '#ff8000' : '#eee';
+            document.getElementById('btnNatcash').style.borderColor = (m === 'Natcash') ? '#ff8000' : '#eee';
+        }
+
+        async function envoyerCommande() {
+            const nom = document.getElementById('clientNom').value;
+            const tel = document.getElementById('clientTel').value;
+
+            if(!nom || !tel || !methodeChoisie) return alert("Remplissez tous les champs et choisissez le paiement !");
+
+            const commande = {
+                clientNom: nom, clientTel: tel,
+                produitNom: produitSelectionne.name,
+                prix: produitSelectionne.price,
+                methodePaiement: methodeChoisie
+            };
+
+            await fetch('/api/commandes', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(commande)
+            });
+
+            const msg = `🛒 *COMMANDE JAGB*\n👤 Nom: ${nom}\n📦 Produit: ${produitSelectionne.name}\n💰 Prix: ${produitSelectionne.price} HTG\n💳 Paiement: ${methodeChoisie}`;
+            window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+            fermerModal();
+        }
+
+        function filtrerProduits() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const filtre = produitsData.filter(p => p.name.toLowerCase().includes(query));
+            afficherProduits(filtre);
+        }
+
+        document.addEventListener('DOMContentLoaded', chargerProduits);
+    </script>
+</body>
+</html>
