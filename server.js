@@ -7,26 +7,25 @@ const app = express();
 
 // --- CONFIGURATION ---
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;
-const ADMIN_PASSWORD = 'KEHhoE1ZPF5cVH88'; 
+const ADMIN_PASSWORD = 'KEHhoE1ZPF5cVH88';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname)); // Garde celle-là aussi en deuxième pour tes fichiers HTML
+app.use(express.static(__dirname)); // FIX : une seule ligne, pas de dossier public
 
 app.use(session({
     secret: 'jagb_secret_key_88',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 60 * 60 * 1000 } // 1 heure de session
+    cookie: { maxAge: 60 * 60 * 1000 }
 }));
 
 // --- CONNEXION MONGODB ---
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ MongoDB connecté avec succès !'))
-    .catch(err => console.error('❌ Erreur de connexion MongoDB :', err));
+    .then(() => console.log('MongoDB connecte !'))
+    .catch(err => console.error('Erreur MongoDB :', err));
 
-// --- MODÈLES (Produits et Commandes) ---
+// --- MODELES ---
 const Product = mongoose.model('Product', new mongoose.Schema({
     name: String,
     price: Number,
@@ -64,6 +63,11 @@ app.post('/login', (req, res) => {
     } else {
         res.redirect('/login?error=1');
     }
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/login');
 });
 
 // --- API PRODUITS ---
@@ -105,9 +109,9 @@ app.post('/api/commandes', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// --- API RAPPORT ADMIN (Pour afficher les commandes sur la page admin) ---
+// --- API RAPPORT ADMIN ---
 app.get('/api/admin/rapport', async (req, res) => {
-    if (!req.session.loggedIn) return res.status(401).send("Non autorisé");
+    if (!req.session.loggedIn) return res.status(401).send("Non autorise");
     try {
         const commandes = await Commande.find().sort({ date: -1 });
         const produits = await Product.countDocuments();
@@ -115,20 +119,13 @@ app.get('/api/admin/rapport', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// --- GESTION ERREUR 404 (Dernière route) ---
+// --- GESTION ERREUR 404 ---
 app.use((req, res) => {
-    res.status(404).send(`
-        <div style="text-align:center; padding:50px; font-family:'Poppins', sans-serif;">
-            <h1 style="font-size:100px; color:#ff8000; margin:0;">404</h1>
-            <h2>Oups ! Ce ballon est hors-jeu.</h2>
-            <p>La page que vous cherchez n'existe pas sur JAGB Store.</p>
-            <a href="/" style="display:inline-block; margin-top:20px; padding:10px 20px; background:#ff8000; color:white; text-decoration:none; border-radius:5px; font-weight:bold;">RETOURNER À LA BOUTIQUE</a>
-        </div>
-    `);
+    res.status(404).send('<div style="text-align:center;padding:50px;font-family:Poppins,sans-serif;"><h1 style="font-size:100px;color:#ff8000;margin:0;">404</h1><h2>Ce ballon est hors-jeu.</h2><a href="/" style="display:inline-block;margin-top:20px;padding:10px 20px;background:#ff8000;color:white;text-decoration:none;border-radius:5px;font-weight:bold;">RETOURNER A LA BOUTIQUE</a></div>');
 });
 
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Serveur JAGB opérationnel sur le port ${PORT}`);
+    console.log('Serveur JAGB sur le port ' + PORT);
 });
