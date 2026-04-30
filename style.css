@@ -400,3 +400,30 @@ footer {
     .payment-grid { grid-template-columns: 1fr; text-align: center; }
     .payment-text h2::after { margin: 15px auto; }
 }
+
+
+/* --- STYLES ADDITIONNELS POUR L'ADMIN --- */
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.admin-table tr {
+    background: var(--white);
+    box-shadow: var(--shadow);
+    border-radius: 8px;
+}
+
+.admin-table td {
+    padding: 15px;
+}
+
+.admin-form input, .admin-form select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: var(--font-main);
+}

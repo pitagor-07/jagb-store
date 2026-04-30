@@ -6,12 +6,13 @@ const path = require('path');
 const app = express();
 
 // --- CONFIGURATION ---
-const MONGO_URI = process.env.MONGO_URL;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;
 const ADMIN_PASSWORD = 'KEHhoE1ZPF5cVH88'; 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname)); // Garde celle-là aussi en deuxième pour tes fichiers HTML
 
 app.use(session({
     secret: 'jagb_secret_key_88',
