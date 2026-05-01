@@ -110,8 +110,7 @@ app.post('/api/commandes', async (req, res) => {
 });
 
 // --- API RAPPORT ADMIN ---
-undefined
-    if (!req.session.loggedIn) return res.status(401).send("Non autorise");
+app.get("/api/admin/rapport", async (req, res) => {
     try {
         const commandes = await Commande.find().sort({ date: -1 });
         const produits = await Product.countDocuments();
