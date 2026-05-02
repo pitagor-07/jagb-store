@@ -56,7 +56,7 @@ app.post('/api/products', upload.single('imageFile'), async (req, res) => {
             name: req.body.name,
             price: Number(req.body.price),
             category: req.body.category,
-            image: req.file ? /uploads/${req.file.filename} : '/uploads/default.jpg'
+            image: req.file ? `/uploads/${req.file.filename}` : '/uploads/default.jpg'
         };
         const newP = new Product(productData);
         await newP.save();
