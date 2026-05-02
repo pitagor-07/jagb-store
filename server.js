@@ -91,4 +91,27 @@ app.get("/api/admin/rapport", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+
+// Route pour afficher la page de login
+app.get('/login', (req, res) => {
+    res.send(`
+        <div style="text-align:center; margin-top:100px; font-family:Arial;">
+            <h2>Connexion Admin JAGB</h2>
+            <form action="/login" method="POST" style="display:inline-block; border:1px solid #ccc; padding:20px; border-radius:10px;">
+                <input type="password" name="password" placeholder="Mot de passe" required style="padding:10px;"><br><br>
+                <button type="submit" style="background:#ff8000; color:white; border:none; padding:10px 20px; cursor:pointer; font-weight:bold;">ENTRER</button>
+            </form>
+        </div>
+    `);
+});
+
+// Route pour traiter le mot de passe
+app.post('/login', (req, res) => {
+    if (req.body.password === ADMIN_PASSWORD) {
+        req.session.loggedIn = true;
+        res.redirect('/admin');
+    } else {
+        res.send('Mot de passe incorrect. <a href="/login">Réessayer</a>');
+    }
+});
 app.listen(PORT, () => { console.log('Serveur sur port ' + PORT); });
