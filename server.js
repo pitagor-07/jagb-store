@@ -73,7 +73,7 @@ app.put('/api/products/:id', upload.single('imageFile'), async (req, res) => {
             category: req.body.category
         };
         if (req.file) {
-            updateData.image = /uploads/${req.file.filename};
+            updateData.image = `/uploads/${req.file.filename}`;
         }
         await Product.findByIdAndUpdate(req.params.id, updateData);
         res.json({ success: true });
