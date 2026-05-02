@@ -2,130 +2,125 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin JAGB</title>
+    <title>Admin - JAGB Store</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; }
-        .topbar { background: #1a1a1a; color: white; padding: 15px 20px; display: flex; justify-content: space-between; }
-        .container { max-width: 900px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; }
-        .stats { display: flex; gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: #fff5eb; padding: 20px; flex: 1; border-radius: 8px; text-align: center; border-left: 5px solid #ff8000; }
-        .stat-card span { font-size: 24px; font-weight: bold; color: #ff8000; display: block; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { background: #ff8000; color: white; border: none; font-weight: bold; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 25px; }
-        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
-        th { background: #f9f9f9; }
-        .btn-delete { background: #ff4d4d; padding: 6px 12px; font-size: 12px; width: auto; }
+        body { font-family: sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; background: #eee; padding: 15px; border-radius: 8px; }
+        input, select, button { display: block; width: 100%; margin-top: 5px; padding: 10px; }
+        button { cursor: pointer; border: none; border-radius: 5px; font-weight: bold; }
+        .btn-add { background: #ff8000; color: white; }
+        .product-item { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ccc; padding: 10px 0; }
+        .product-item img { width: 50px; height: 50px; object-fit: cover; }
+        #editFormContainer { display:none; background: #fff3e0; padding: 20px; border: 2px solid #ff8000; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <div class="topbar">
-        <h1>Dashboard JAGB Store</h1>
-        <a href="/" style="color:white;text-decoration:none;font-weight:bold;">Retour Boutique</a>
+
+    <h1>Panneau d'Administration</h1>
+
+    <div id="editFormContainer">
+        <h3>Modifier le produit</h3>
+        <input type="hidden" id="editId">
+        <input type="text" id="editNom" placeholder="Nom">
+        <input type="number" id="editPrix" placeholder="Prix">
+        <select id="editCategorie">
+            <option value="Maillots">Maillots</option>
+            <option value="Equipements">Équipements</option>
+            <option value="Accessoires">Accessoires</option>
+        </select>
+        <label>Changer la photo :</label>
+        <input type="file" id="editImageFile" accept="image/*">
+        <button onclick="sauvegarderModification()" style="background: #28a745; color: white; margin-top:10px;">ENREGISTRER</button>
+        <button onclick="annulerModification()" style="background: #666; color: white;">ANNULER</button>
     </div>
-    <div class="container">
-        <div class="stats">
-            <div class="stat-card"><p>Produits en ligne</p><span id="stat-p">0</span></div>
-            <div class="stat-card"><p>Commandes recues</p><span id="stat-c">0</span></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
-            <div>
-                <h3>Ajouter un Produit</h3>
-                <form id="productForm">
-                    <label>Nom</label>
-                    <input type="text" id="name" placeholder="Ex: Maillot JAGB" required>
-                    <label>Prix (HTG)</label>
-                    <input type="number" id="price" placeholder="Ex: 2500" required>
-                    <label>Categorie</label>
-                    <select id="category">
-                        <option value="Maillots">Maillots</option>
-                        <option value="Gants">Gants</option>
-                        <option value="Equipements">Equipements</option>
-                        <option value="Accessoires">Accessoires</option>
-                    </select>
-                    <label>Image (URL)</label>
-                    <input type="text" id="image" placeholder="https://...">
-                    <button type="submit">ENREGISTRER</button>
-                </form>
-            </div>
-            <div>
-                <h3>Inventaire</h3>
-                <table id="productTable">
-                    <thead><tr><th>Produit</th><th>Prix</th><th>Action</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-        <div style="margin-top:30px;">
-            <h3>Commandes recues</h3>
-            <div id="commandes-list"></div>
-        </div>
+
+    <div class="form-group">
+        <h3>Ajouter un nouveau produit</h3>
+        <input type="text" id="nom" placeholder="Nom du produit">
+        <input type="number" id="prix" placeholder="Prix">
+        <select id="categorie">
+            <option value="Maillots">Maillots</option>
+            <option value="Equipements">Équipements</option>
+            <option value="Accessoires">Accessoires</option>
+        </select>
+        <label>Photo du produit :</label>
+        <input type="file" id="imageFile" accept="image/*">
+        <button class="btn-add" onclick="ajouterProduit()">AJOUTER LE PRODUIT</button>
     </div>
+
+    <hr>
+    <h2>Liste des Produits</h2>
+    <div id="listeProduits"></div>
+
     <script>
-        async function loadData() {
-            try {
-                const resP = await fetch('/api/products');
-                const products = await resP.json();
-                document.getElementById('stat-p').innerText = products.length;
-                const tbody = document.querySelector('#productTable tbody');
-                tbody.innerHTML = products.map(p =>
-                    '<tr><td><strong>' + p.name + '</strong></td><td>' + Number(p.price).toLocaleString() + ' HTG</td><td><button onclick="deleteP(\'' + p._id + '\')" class="btn-delete">Supprimer</button></td></tr>'
-                ).join('');
-            } catch(e) { console.error('Erreur produits:', e); }
-
-            try {
-                const resR = await fetch('/api/admin/rapport');
-                if (resR.ok) {
-                    const rapport = await resR.json();
-                    document.getElementById('stat-c').innerText = rapport.commandes ? rapport.commandes.length : 0;
-                    const div = document.getElementById('commandes-list');
-                    if (rapport.commandes && rapport.commandes.length > 0) {
-                        div.innerHTML = rapport.commandes.map(c =>
-                            '<div style="border:1px solid #eee;padding:10px;margin:5px 0;border-radius:5px;"><strong>' + c.clientNom + '</strong> — ' + c.produitNom + ' — ' + Number(c.total || c.prix).toLocaleString() + ' HTG<br><small>' + new Date(c.date).toLocaleString('fr-FR') + '</small></div>'
-                        ).join('');
-                    } else {
-                        div.innerHTML = '<p style="color:#888;">Aucune commande pour le moment.</p>';
-                    }
-                }
-            } catch(e) { console.error('Erreur rapport:', e); }
+        async function chargerProduits() {
+            const res = await fetch('/api/products');
+            const produits = await res.json();
+            const container = document.getElementById('listeProduits');
+            container.innerHTML = '';
+            produits.forEach(p => {
+                container.innerHTML += `
+                    <div class="product-item">
+                        <img src="${p.image}" alt="">
+                        <div>
+                            <strong>${p.name}</strong> - ${p.price} HTG
+                        </div>
+                        <div>
+                            <button onclick="preparerModification('${p._id}', '${p.name}', ${p.price}, '${p.category}')" style="background:#007bff; color:white;">Modifier</button>
+                            <button onclick="supprimerProduit('${p._id}')" style="background:#dc3545; color:white;">Supprimer</button>
+                        </div>
+                    </div>`;
+            });
         }
 
-        document.getElementById('productForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const data = {
-                name: document.getElementById('name').value,
-                price: Number(document.getElementById('price').value),
-                category: document.getElementById('category').value,
-                image: document.getElementById('image').value || 'https://via.placeholder.com/300'
-            };
-            try {
-                const res = await fetch('/api/products', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) {
-                    alert('Produit ajoute !');
-                    e.target.reset();
-                    loadData();
-                } else {
-                    const err = await res.json();
-                    alert('Erreur: ' + JSON.stringify(err));
-                }
-            } catch(err) {
-                alert('Erreur reseau: ' + err.message);
-            }
-        };
+        async function ajouterProduit() {
+            const formData = new FormData();
+            formData.append('name', document.getElementById('nom').value);
+            formData.append('price', document.getElementById('prix').value);
+            formData.append('category', document.getElementById('categorie').value);
+            
+            const fileInput = document.getElementById('imageFile');
+            if (fileInput.files[0]) formData.append('imageFile', fileInput.files[0]);
 
-        async function deleteP(id) {
-            if (confirm('Supprimer ce produit ?')) {
-                const res = await fetch('/api/products/' + id, { method: 'DELETE' });
-                if (res.ok) loadData();
+            const res = await fetch('/api/products', { method: 'POST', body: formData });
+            if (res.ok) location.reload();
+        }
+
+        function preparerModification(id, nom, prix, categorie) {
+            document.getElementById('editFormContainer').style.display = 'block';
+            document.getElementById('editId').value = id;
+            document.getElementById('editNom').value = nom;
+            document.getElementById('editPrix').value = prix;
+            document.getElementById('editCategorie').value = categorie;
+            window.scrollTo(0, 0);
+        }
+
+        async function sauvegarderModification() {
+            const id = document.getElementById('editId').value;
+            const formData = new FormData();
+            formData.append('name', document.getElementById('editNom').value);
+            formData.append('price', document.getElementById('editPrix').value);
+            formData.append('category', document.getElementById('editCategorie').value);
+
+            const fileInput = document.getElementById('editImageFile');
+            if (fileInput.files[0]) formData.append('imageFile', fileInput.files[0]);
+
+            const res = await fetch(/api/products/${id}, { method: 'PUT', body: formData });
+            if (res.ok) location.reload();
+        }
+
+        function annulerModification() {
+            document.getElementById('editFormContainer').style.display = 'none';
+        }
+
+        async function supprimerProduit(id) {
+            if (confirm("Supprimer ce produit ?")) {
+                await fetch(/api/products/${id}, { method: 'DELETE' });
+                chargerProduits();
             }
         }
 
-        loadData();
+        chargerProduits();
     </script>
 </body>
 </html>
