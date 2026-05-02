@@ -2,8 +2,21 @@ const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const path = require('path');
+const multer = require('multer'); // AJOUTÉ
 
 const app = express();
+
+// --- CONFIGURATION MULTER ---
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Les photos iront dans ton nouveau dossier
+    },
+    filename: (req, file, cb) => {
+        // Donne un nom unique : date-nomdufichier.extension
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 
 // --- CONFIGURATION ---
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;
@@ -11,7 +24,8 @@ const ADMIN_PASSWORD = 'KEHhoE1ZPF5cVH88';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname)); // FIX : une seule ligne, pas de dossier public
+app.use(express.static(__dirname)); 
+app.use('/uploads', express.static('uploads')); // AJOUTÉ : Pour voir les photos
 
 app.use(session({
     secret: 'jagb_secret_key_88',
@@ -78,9 +92,18 @@ app.get('/api/products', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.post('/api/products', async (req, res) => {
+// MODIFIÉ : Ajout de upload.single('imageFile') pour capter la photo du téléphone
+app.post('/api/products', upload.single('imageFile'), async (req, res) => {
     try {
-        const newP = new Product(req.body);
+        const productData = {
+            name: req.body.name,
+            price: Number(req.body.price),
+            stock: Number(req.body.stock) || 0,
+            category: req.body.category,
+            // Si une photo est uploadée, on prend son chemin, sinon on prend le lien texte
+            image: req.file ? /uploads/${req.file.filename} : req.body.image
+        };
+        const newP = new Product(productData);
         await newP.save();
         res.status(201).json(newP);
     } catch (e) { res.status(500).json({ error: e.message }); }
