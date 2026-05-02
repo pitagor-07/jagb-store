@@ -101,7 +101,7 @@ app.post('/api/products', upload.single('imageFile'), async (req, res) => {
             stock: Number(req.body.stock) || 0,
             category: req.body.category,
             // Si une photo est uploadée, on prend son chemin, sinon on prend le lien texte
-            image: req.file ? /uploads/${req.file.filename} : req.body.image
+            image: req.file ? `/uploads/${req.file.filename}` : req.body.image
         };
         const newP = new Product(productData);
         await newP.save();
